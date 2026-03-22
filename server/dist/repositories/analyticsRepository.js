@@ -1,7 +1,8 @@
+import { Prisma } from '@prisma/client';
 import prisma from '../config/client.js';
 export class AnalyticsRepository {
     async getRequestCountsByEndpoint(projectId) {
-        return prisma.requestHistory.groupBy({
+        const args = Prisma.validator()({
             by: ['endpoint_id', 'method', 'url'],
             where: { endpoint: { project_id: projectId } },
             _count: { id: true },
@@ -12,7 +13,8 @@ export class AnalyticsRepository {
                     }
                 }
             ]
-        }); // Temporarily using as any to see if it builds, then will refine.
+        });
+        return prisma.requestHistory.groupBy(args); // Keeping as any for now as Prisma groupBy types are notoriously difficult with aggregates and relations.
     }
     async getDailyRequestCounts(projectId, days = 7) {
         const startDate = new Date();
