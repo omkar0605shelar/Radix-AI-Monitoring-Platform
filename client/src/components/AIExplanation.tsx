@@ -45,6 +45,12 @@ const AIExplanation = ({ endpointId, initialExplanation }: AIExplanationProps) =
     visible: { opacity: 1, x: 0 }
   };
 
+  const renderContent = (content: any) => {
+    if (!content) return '';
+    if (typeof content === 'string') return content;
+    return Object.entries(content).map(([k, v]) => `${k}: ${v}`).join(' | ');
+  };
+
   return (
     <div className="bg-card border border-border rounded-2xl p-6 shadow-sm overflow-hidden relative group">
       <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
@@ -101,7 +107,7 @@ const AIExplanation = ({ endpointId, initialExplanation }: AIExplanationProps) =
                 <h4 className="text-sm font-bold uppercase tracking-wide">Purpose</h4>
               </div>
               <p className="text-foreground leading-relaxed">
-                {explanation.purpose}
+                {renderContent(explanation.purpose)}
               </p>
             </motion.div>
 
@@ -113,7 +119,7 @@ const AIExplanation = ({ endpointId, initialExplanation }: AIExplanationProps) =
                   <h4 className="text-sm font-bold uppercase tracking-wide">Request Payload</h4>
                 </div>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  {explanation.request_explanation}
+                  {renderContent(explanation.request_explanation)}
                 </p>
               </motion.div>
 
@@ -124,7 +130,7 @@ const AIExplanation = ({ endpointId, initialExplanation }: AIExplanationProps) =
                   <h4 className="text-sm font-bold uppercase tracking-wide">Expected Response</h4>
                 </div>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  {explanation.response_explanation}
+                  {renderContent(explanation.response_explanation)}
                 </p>
               </motion.div>
             </div>
@@ -136,7 +142,7 @@ const AIExplanation = ({ endpointId, initialExplanation }: AIExplanationProps) =
                 <h4 className="text-sm font-bold uppercase tracking-wide">Common Use Case</h4>
               </div>
               <p className="text-foreground/80 text-sm italic italic leading-relaxed">
-                "{explanation.use_case}"
+                "{renderContent(explanation.use_case)}"
               </p>
             </motion.div>
             
