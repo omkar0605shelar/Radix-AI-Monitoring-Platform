@@ -10,6 +10,8 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ProjectDetails from './pages/ProjectDetails';
 import Teams from './pages/Teams';
+import Analytics from './pages/Analytics';
+import Settings from './pages/Settings';
 
 import React from 'react';
 
@@ -32,9 +34,11 @@ const DynamicTitle = () => {
     
     if (path === '/dashboard') document.title = `Dashboard | ${defaultTitle}`;
     else if (path === '/teams') document.title = `Teams | ${defaultTitle}`;
+    else if (path === '/analytics') document.title = `Analytics | ${defaultTitle}`;
+    else if (path === '/settings') document.title = `Settings | ${defaultTitle}`;
     else if (path === '/login') document.title = `Login | ${defaultTitle}`;
     else if (path === '/register') document.title = `Register | ${defaultTitle}`;
-    else if (path.startsWith('/projects/')) document.title = `Project | ${defaultTitle}`;
+    else if (path.startsWith('/projects/')) document.title = `Project Details | ${defaultTitle}`;
     else document.title = defaultTitle;
   }, [location.pathname]);
 
@@ -45,7 +49,7 @@ function App() {
   return (
     <BrowserRouter>
       <DynamicTitle />
-      <div className="min-h-screen bg-background text-foreground flex flex-col">
+      <div className="min-h-screen bg-white">
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={
@@ -64,6 +68,18 @@ function App() {
               <Dashboard />
             </ProtectedRoute>
           } />
+
+          <Route path="/analytics" element={
+            <ProtectedRoute>
+              <Analytics />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <Settings />
+            </ProtectedRoute>
+          } />
           
           <Route path="/projects/:id" element={
             <ProtectedRoute>
@@ -73,7 +89,7 @@ function App() {
 
           <Route path="/teams" element={
             <ProtectedRoute>
-              <Teams />
+               <Teams />
             </ProtectedRoute>
           } />
         </Routes>

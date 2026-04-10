@@ -2,109 +2,117 @@ import OpenAI from 'openai';
 import prisma from '../config/client.js';
 import redisClient from '../config/redis.js';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || 'mock_key',
-  baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+const nvidia = new OpenAI({
+  apiKey: process.env.NVIDIA_API_KEY || 'mock_key',
+  baseURL: process.env.NVIDIA_BASE_URL || 'https://integrate.api.nvidia.com/v1',
 });
 
-export class AIService {
-  async explainEndpoint(endpointId: string) {
-    // 1. Check Redis Cache
-    const cacheKey = `ai_explanation:${endpointId}`;
-    if (redisClient.isOpen) {
-       const cached = await redisClient.get(cacheKey);
-       if (cached) return this.parseJsonResponse(cached);
-    }
+// Standard technical model for analysis
+const MODEL = "meta/llama-3.1-70b-instruct";
 
-    // 2. Check DB
+export class AIService {
+  /**
+   * Performs deep analysis on API logs to find the root cause of failures.
+   */
+  async rootCauseAnalysis(logs: any[]) {
+    // 1. Prune context (remove noise)
+    const prunedLogs = logs.map(log => ({
+      path: log.url,
+      method: log.method,
+      status: log.status,
+      duration: log.duration,
+      error: typeof log.response === 'string' ? log.response.substring(0, 500) : JSON.stringify(log.response).substring(0, 500)
+    }));
+
+    const prompt = `
+      Analyze these API logs and identify the root cause of failures.
+      Format the response as a clear, professional summary for a DevOps engineer.
+      
+      Logs:
+      ${JSON.stringify(prunedLogs)}
+      
+      Return JSON: { "root_cause": "...", "severity": "...", "recommended_action": "..." }
+    `;
+
+    return this.callNvidia(prompt, true);
+  }
+
+  /**
+   * Answers natural language questions about API performance.
+   */
+  async naturalLanguageQuery(query: string, projectId: string) {
+    // Fetch some basic context first
+    const stats = await prisma.requestHistory.findMany({
+      where: { endpoint: { project_id: projectId } },
+      take: 10,
+      orderBy: { created_at: 'desc' }
+    });
+
+    const prompt = `
+      The user is asking: "${query}"
+      Based on these recent logs: ${JSON.stringify(stats.map(s => ({ m: s.method, u: s.url, s: s.status, d: s.duration })))}
+      Provide a helpful, data-driven answer. 
+      Keep it professional and concise.
+    `;
+
+    return this.callNvidia(prompt);
+  }
+
+  /**
+   * Suggests a code fix or configuration change for a specific error.
+   */
+  async suggestFix(errorLog: any) {
+    const prompt = `
+      Suggest a fix for this API error:
+      Path: ${errorLog.url}
+      Status: ${errorLog.status}
+      Response: ${JSON.stringify(errorLog.response)}
+      
+      Explain the fix in technical detail but keep it brief.
+    `;
+
+    return this.callNvidia(prompt);
+  }
+
+  /**
+   * Original method: Explains an endpoint to developers.
+   */
+  async explainEndpoint(endpointId: string) {
     const endpoint = await prisma.endpoint.findUnique({
        where: { id: endpointId },
        include: { project: true }
     });
 
-    if (!endpoint) {
-      const error = new Error('Endpoint not found');
-      (error as any).statusCode = 404;
-      throw error;
-    }
+    if (!endpoint) throw new Error('Endpoint not found');
 
-    if (endpoint.ai_explanation) {
-       // Also cache in Redis
-       if (redisClient.isOpen) {
-          await redisClient.setEx(cacheKey, 86400, endpoint.ai_explanation);
-       }
-       return this.parseJsonResponse(endpoint.ai_explanation);
-    }
-
-    // 3. Call OpenAI
     const prompt = `
-      Explain the following API endpoint in detail for a developer:
-      Project Repository: ${endpoint.project.repository_url}
-      Path: ${endpoint.path}
+      Explain this API endpoint:
       Method: ${endpoint.method}
-      Request Schema (Mock/Detected): ${JSON.stringify(endpoint.request_schema)}
-      Response Schema (Mock/Detected): ${JSON.stringify(endpoint.response_schema)}
+      Path: ${endpoint.path}
+      Request: ${JSON.stringify(endpoint.request_schema)}
+      Response: ${JSON.stringify(endpoint.response_schema)}
       
-      Provide:
-      1. Purpose (One-line description of what this endpoint does)
-      2. Request Explanation (Explain the expected payload, parameters, and headers)
-      3. Response Explanation (Explain the response fields and status codes)
-      4. Use Case (A common scenario where this endpoint is used)
-      
-      Return ONLY a JSON object with keys: "purpose", "request_explanation", "response_explanation", "use_case".
+      Return JSON: { "purpose": "...", "request_explanation": "...", "response_explanation": "...", "use_case": "..." }
     `;
 
-    try {
-      const response = await openai.chat.completions.create({
-        model: "meta/llama-3.1-8b-instruct",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.1,
-        max_tokens: 1024,
-        response_format: { type: "json_object" } as any,
-      });
-
-      const rawContent = response.choices[0]?.message?.content || "{}";
-      const cleanedJson = this.parseJsonResponse(rawContent);
-      
-      // 4. Save to DB & Redis (save cleaned version)
-      await prisma.endpoint.update({
-         where: { id: endpointId },
-         data: { ai_explanation: JSON.stringify(cleanedJson) }
-      });
-
-      if (redisClient.isOpen) {
-         await redisClient.setEx(cacheKey, 86400, JSON.stringify(cleanedJson));
-      }
-
-      return cleanedJson;
-    } catch (error: any) {
-      console.error('AI Service Error:', error.message || error);
-      throw new Error(`Failed to generate AI explanation: ${error.message}`);
-    }
+    return this.callNvidia(prompt, true);
   }
 
-  private parseJsonResponse(text: string): any {
+  private async callNvidia(prompt: string, isJson: boolean = false) {
     try {
-      // 1. Try direct parse
-      return JSON.parse(text);
-    } catch (e) {
-      // 2. Try extracting from markdown or text
-      const jsonMatch = text.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          return JSON.parse(jsonMatch[0]);
-        } catch (innerError) {
-          console.error('Failed to parse extracted JSON:', jsonMatch[0]);
-        }
-      }
-      
-      console.error('Original text that failed parsing:', text);
-      return {
-        purpose: "Error generating explanation",
-        request_explanation: "The AI response was not in a valid JSON format.",
-        response_explanation: "Please try again.",
-        use_case: "N/A"
-      };
+      const response = await nvidia.chat.completions.create({
+        model: MODEL,
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.2,
+        max_tokens: 1024,
+        response_format: isJson ? { type: "json_object" } : undefined,
+      } as any);
+
+      const content = response.choices[0]?.message?.content || "";
+      return isJson ? JSON.parse(content) : content;
+    } catch (error: any) {
+      console.error('NVIDIA AI Service Error:', error.message || error);
+      throw new Error(`AI generation failed: ${error.message}`);
     }
   }
 }

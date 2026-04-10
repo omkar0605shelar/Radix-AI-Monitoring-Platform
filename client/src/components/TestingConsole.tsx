@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { History, Send, Terminal, Loader2, CheckCircle2, Clock } from 'lucide-react';
+import { History, Send, Terminal, Loader2, Clock, ShieldCheck, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { executeApiRequest, getRequestHistory } from '../services/testingService';
 import { useDispatch } from 'react-redux';
@@ -55,49 +55,52 @@ const TestingConsole = ({ endpoint }: TestingConsoleProps) => {
     }
   };
 
-  const statusColor = (status: number) => {
-    if (status < 300) return 'text-green-500';
-    if (status < 400) return 'text-blue-500';
-    return 'text-red-500';
+  const statusStyles = (status: number) => {
+    if (status < 300) return 'text-emerald-600 bg-emerald-50 border-emerald-100';
+    if (status < 400) return 'text-blue-600 bg-blue-50 border-blue-100';
+    return 'text-rose-600 bg-rose-50 border-rose-100';
   };
 
   return (
-    <div className="bg-card/50 backdrop-blur-xl border border-border rounded-2xl overflow-hidden shadow-2xl flex flex-col h-[600px]">
+    <div className="bg-white rounded-3xl overflow-hidden flex flex-col h-[650px]">
       {/* Header / URL Bar */}
-      <div className="p-4 border-b border-border bg-muted/30 flex items-center gap-3">
-        <div className={`px-3 py-1 rounded-md font-bold text-xs ${endpoint.method === 'GET' ? 'bg-blue-500/10 text-blue-500' :
-            endpoint.method === 'POST' ? 'bg-green-500/10 text-green-500' :
-              endpoint.method === 'PUT' ? 'bg-yellow-500/10 text-yellow-500' :
-                'bg-red-500/10 text-red-500'
-          }`}>
-          {endpoint.method}
-        </div>
-        <div className="flex-1 bg-background/50 border border-border rounded-lg px-3 py-1.5 text-sm font-mono truncate">
-          {endpoint.path}
+      <div className="p-6 border-b border-slate-100 bg-white flex items-center gap-4">
+        <div className="flex-1 flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 group focus-within:border-primary/30 focus-within:ring-4 focus-within:ring-primary/5 transition-all">
+          <Globe className="h-4 w-4 text-slate-400" />
+          <div className="flex items-center gap-2 flex-1">
+             <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded border ${
+               endpoint.method === 'GET' ? 'text-blue-600 bg-blue-50 border-blue-100' :
+               endpoint.method === 'POST' ? 'text-emerald-600 bg-emerald-50 border-emerald-100' :
+               'text-amber-600 bg-amber-50 border-amber-100'
+             }`}>
+               {endpoint.method}
+             </span>
+             <span className="text-sm font-mono font-bold text-slate-600 truncate">{endpoint.path}</span>
+          </div>
         </div>
         <button
           onClick={handleExecute}
           disabled={executing}
-          className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-1.5 rounded-lg font-medium flex items-center transition-all disabled:opacity-50 shadow-lg shadow-primary/20"
+          className="bg-slate-900 text-white hover:bg-slate-800 px-6 py-2.5 rounded-xl font-bold text-sm flex items-center transition-all disabled:opacity-50 shadow-lg shadow-slate-200 active:scale-95"
         >
           {executing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
-          Send
+          Execute
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-border bg-muted/10">
+      <div className="flex border-b border-slate-100 bg-slate-50/50 px-6">
         {['body', 'headers', 'params', 'response'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab as any)}
-            className={`px-6 py-3 text-xs font-semibold uppercase tracking-wider transition-all relative ${activeTab === tab ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+            className={`px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative ${activeTab === tab ? 'text-primary' : 'text-slate-400 hover:text-slate-600'
               }`}
           >
             {tab}
             {activeTab === tab && (
               <motion.div
-                layoutId="activeTab"
+                layoutId="activeTabConsole"
                 className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
               />
             )}
@@ -106,58 +109,64 @@ const TestingConsole = ({ endpoint }: TestingConsoleProps) => {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-hidden flex flex-col">
-        <div className="flex-1 p-4 overflow-auto font-mono text-sm bg-background/30">
+      <div className="flex-1 overflow-hidden flex flex-col bg-white">
+        <div className="flex-1 p-8 overflow-auto font-mono text-sm">
           <AnimatePresence mode="wait">
             {activeTab === 'body' && (
               <motion.textarea
-                initial={{ opacity: 0, y: 10 }}
+                key="body"
+                initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                exit={{ opacity: 0, y: -5 }}
                 value={requestBody}
                 onChange={(e) => setRequestBody(e.target.value)}
-                className="w-full h-full bg-transparent resize-none focus:outline-none scrollbar-hide"
+                className="w-full h-full bg-transparent resize-none focus:outline-none text-slate-700 leading-relaxed scrollbar-hide"
                 placeholder="{}"
               />
             )}
             {activeTab === 'headers' && (
               <motion.textarea
-                initial={{ opacity: 0, y: 10 }}
+                key="headers"
+                initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
+                exit={{ opacity: 0, y: -5 }}
                 value={headers}
                 onChange={(e) => setHeaders(e.target.value)}
-                className="w-full h-full bg-transparent resize-none focus:outline-none scrollbar-hide"
+                className="w-full h-full bg-transparent resize-none focus:outline-none text-slate-700 leading-relaxed scrollbar-hide"
                 placeholder="{}"
               />
             )}
             {activeTab === 'response' && (
               <motion.div
+                key="response"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="h-full flex flex-col"
               >
                 {response ? (
-                  <>
-                    <div className="flex items-center gap-4 mb-4 pb-4 border-b border-border/50">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-muted-foreground">Status:</span>
-                        <span className={`font-bold ${statusColor(response.status)}`}>{response.status}</span>
+                  <div className="space-y-6">
+                    <div className="flex items-center gap-6 border-b border-slate-100 pb-6">
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Status</p>
+                        <span className={`text-sm font-black px-3 py-1 rounded-lg border ${statusStyles(response.status)}`}>
+                          {response.status} {response.status < 300 ? 'OK' : 'Error'}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span className="text-muted-foreground">Time:</span>
-                        <span className="text-foreground">{response.duration}ms</span>
+                      <div className="space-y-1 border-l border-slate-100 pl-6">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none flex items-center gap-1">
+                          <Clock className="h-3 w-3" /> Latency
+                        </p>
+                        <span className="text-sm font-black text-slate-900">{response.duration}ms</span>
                       </div>
                     </div>
-                    <pre className="flex-1 overflow-auto text-xs text-blue-400 dark:text-blue-300">
+                    <pre className="text-xs text-slate-600 bg-slate-50 p-6 rounded-2xl border border-slate-100 overflow-auto max-h-[350px] leading-relaxed">
                       {JSON.stringify(response.response || response, null, 2)}
                     </pre>
-                  </>
+                  </div>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-muted-foreground space-y-3">
-                    <Terminal className="h-12 w-12 opacity-20" />
-                    <p>Click Send to execute the request</p>
+                  <div className="h-full flex flex-col items-center justify-center text-slate-300 space-y-4 py-20">
+                    <Terminal className="h-16 w-16 opacity-30" />
+                    <p className="font-bold text-sm text-slate-400">Ready for execution</p>
                   </div>
                 )}
               </motion.div>
@@ -166,15 +175,17 @@ const TestingConsole = ({ endpoint }: TestingConsoleProps) => {
         </div>
       </div>
 
-      {/* History Sidebar/Footer Toggle */}
-      <div className="p-3 border-t border-border bg-muted/20 flex items-center justify-between text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-        <div className="flex items-center gap-2">
-          <History className="h-3 w-3" />
-          Last result: {response ? `${response.status} OK` : 'None'}
-        </div>
-        <div className="flex items-center gap-1">
-          <CheckCircle2 className="h-3 w-3 text-green-500" />
-          Connected to Mock Server
+      {/* Footer Stats */}
+      <div className="px-8 py-5 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+           <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">
+              <History className="h-3 w-3" />
+              History: {response ? '1 Log' : '0 Logs'}
+           </div>
+           <div className="flex items-center gap-2 text-[10px] font-black text-emerald-500 uppercase tracking-[0.15em]">
+              <ShieldCheck className="h-3 w-3" />
+              Secure Pipeline
+           </div>
         </div>
       </div>
     </div>

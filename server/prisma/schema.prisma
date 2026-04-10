@@ -7,14 +7,17 @@ datasource db {
 }
 
 model User {
-  id            String       @id @default(uuid())
-  name          String
-  email         String       @unique
-  password      String?
-  google_id     String?
-  created_at    DateTime     @default(now())
-  projects      Project[]
-  team_members TeamMember[]
+  id                    String       @id @default(uuid())
+  name                  String
+  email                 String       @unique
+  password              String?
+  google_id             String?
+  stripe_customer_id    String?      @unique
+  subscription_tier     String       @default("free") // free, pro, enterprise
+  subscription_status   String?      // active, past_due, canceled
+  created_at            DateTime     @default(now())
+  projects              Project[]
+  team_members          TeamMember[]
 }
 
 model Team {
@@ -46,13 +49,28 @@ model Project {
   id              String       @id @default(uuid())
   user_id         String
   team_id         String?
-  repository_url  String
-  status          String       @default("pending")
+  name            String
+  description     String?
+  repository_url  String?
+  status          String       @default("active")
   created_at      DateTime     @default(now())
   user            User         @relation(fields: [user_id], references: [id])
   team            Team?        @relation(fields: [team_id], references: [id])
   endpoints       Endpoint[]
   versions        ApiVersion[]
+  api_keys        ApiKey[]
+  alerts          Alert[]
+  usage_records   UsageRecord[]
+}
+
+model ApiKey {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  name        String
+  project_id  String
+  last_used   DateTime?
+  created_at  DateTime @default(now())
+  project     Project  @relation(fields: [project_id], references: [id])
 }
 
 model Endpoint {
@@ -89,4 +107,24 @@ model RequestHistory {
   response    Json?
   created_at  DateTime @default(now())
   endpoint    Endpoint @relation(fields: [endpoint_id], references: [id])
+}
+
+model UsageRecord {
+  id          String   @id @default(uuid())
+  project_id  String
+  type        String   // e.g., "api_call", "ai_insight"
+  count       Int      @default(1)
+  timestamp   DateTime @default(now())
+  project     Project  @relation(fields: [project_id], references: [id])
+}
+
+model Alert {
+  id          String   @id @default(uuid())
+  project_id  String
+  type        String   // "LATENCY", "ERROR", "DOWNTIME"
+  threshold   Float
+  severity    String   // "LOW", "MEDIUM", "HIGH"
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  project     Project  @relation(fields: [project_id], references: [id])
 }

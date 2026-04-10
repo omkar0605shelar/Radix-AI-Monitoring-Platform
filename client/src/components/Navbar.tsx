@@ -1,70 +1,80 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../redux/store';
 import { logout } from '../redux/slices/authSlice';
-import { LogOut, User as UserIcon, Code, Moon, Sun } from 'lucide-react';
+import { LogOut, User as UserIcon, Settings, Bell, Zap } from 'lucide-react';
 
 const Navbar = () => {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    if (document.documentElement.classList.contains('dark')) {
-      setIsDark(true);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    document.documentElement.classList.toggle('dark');
-    setIsDark(!isDark);
-  };
 
   const handleLogout = () => {
     dispatch(logout());
   };
 
   return (
-    <nav className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container flex h-16 items-center mx-auto px-4 md:px-8 justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <Code className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold font-sans tracking-tight">API Insight</span>
+    <nav className="glass-nav relative">
+      <div className="container flex h-16 items-center mx-auto px-6 max-w-7xl justify-between">
+        <Link to="/" className="flex items-center space-x-3 group">
+          <div className="h-9 w-9 bg-slate-900 rounded-xl flex items-center justify-center group-hover:bg-primary transition-all shadow-lg shadow-slate-200">
+            <Zap className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-xl font-black font-sans tracking-tight text-slate-900">API<span className="text-primary">Insight</span></span>
         </Link>
-        <div className="flex items-center space-x-4">
-          <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-muted/50 transition-colors" aria-label="Toggle theme">
-            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </button>
-          
-          {isAuthenticated ? (
+        
+        <div className="hidden md:flex items-center space-x-8">
+          {isAuthenticated && (
             <>
-              <Link to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link to="/dashboard" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors tracking-wide">
                 Dashboard
               </Link>
-              <Link to="/teams" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link to="/teams" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors tracking-wide">
                 Teams
               </Link>
-              <div className="flex items-center space-x-2 bg-muted px-3 py-1.5 rounded-full">
-                <UserIcon className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm font-medium">{user?.name}</span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="flex items-center space-x-1 text-sm font-medium text-destructive hover:text-destructive/80 transition-colors"
-              >
-                <LogOut className="h-4 w-4" />
-                <span>Logout</span>
+              <Link to="/analytics" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors tracking-wide">
+                Analytics
+              </Link>
+            </>
+          )}
+        </div>
+
+        <div className="flex items-center space-x-4">
+          {isAuthenticated ? (
+            <>
+              <button className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                <Bell className="h-5 w-5" />
               </button>
+              <Link to="/settings" className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all">
+                <Settings className="h-5 w-5" />
+              </Link>
+              
+              <div className="h-8 w-px bg-slate-200 mx-2" />
+              
+              <div className="flex items-center space-x-4 pl-2">
+                <div className="flex items-center space-x-2 px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-xl">
+                  <div className="h-6 w-6 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <UserIcon className="h-4 w-4 text-primary" />
+                  </div>
+                  <span className="text-sm font-bold text-slate-700">{user?.name}</span>
+                </div>
+                
+                <button
+                  onClick={handleLogout}
+                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                  title="Logout"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </div>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link to="/login" className="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors tracking-wide">
                 Sign In
               </Link>
               <Link
                 to="/register"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                className="bg-slate-900 text-white hover:bg-slate-800 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-slate-200"
               >
                 Get Started
               </Link>
