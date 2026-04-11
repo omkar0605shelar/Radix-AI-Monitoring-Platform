@@ -91,14 +91,20 @@ const AIRefactor = ({ endpointId }: AIRefactorProps) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {refactor.improvements?.length > 0 ? (
-                refactor.improvements.map((improvement: string, idx: number) => (
-                  <motion.div key={idx} variants={itemVariants} className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 flex items-start gap-4 hover:bg-indigo-50/80 transition-colors">
-                    <div className="p-2 bg-indigo-100 rounded-xl flex-shrink-0 mt-0.5">
-                       <Zap className="h-4 w-4 text-indigo-600" />
-                    </div>
-                    <p className="text-sm text-slate-700 font-medium leading-relaxed pt-1">{improvement}</p>
-                  </motion.div>
-                ))
+                refactor.improvements.map((improvement: any, idx: number) => {
+                  const content = typeof improvement === 'string' 
+                    ? improvement 
+                    : (improvement?.description || improvement?.action || improvement?.suggestion || JSON.stringify(improvement));
+                  
+                  return (
+                    <motion.div key={idx} variants={itemVariants} className="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100 flex items-start gap-4 hover:bg-indigo-50/80 transition-colors">
+                      <div className="p-2 bg-indigo-100 rounded-xl flex-shrink-0 mt-0.5">
+                         <Zap className="h-4 w-4 text-indigo-600" />
+                      </div>
+                      <p className="text-sm text-slate-700 font-medium leading-relaxed pt-1">{content}</p>
+                    </motion.div>
+                  );
+                })
               ) : (
                 <div className="col-span-full bg-slate-50 p-6 text-center rounded-2xl border border-slate-100 text-sm font-medium text-slate-500">
                   Code structure looks incredibly solid. No major architectural improvements suggested at this time.
