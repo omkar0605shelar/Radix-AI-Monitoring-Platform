@@ -345,4 +345,23 @@ Response: ${JSON.stringify(endpoint.response_schema)}
     return this.generateSmartDocumentation(apiContext);
   }
 
+  // 🛡️ Wrapper for Frontend Compatibility: Audit Endpoint
+  async auditEndpoint(endpointId: string) {
+    const endpoint = await prisma.endpoint.findUnique({
+       where: { id: endpointId },
+       include: { project: true }
+    });
+
+    if (!endpoint) throw new Error('Endpoint not found');
+
+    const apiContext = `
+Method: ${endpoint.method}
+Path: ${endpoint.path}
+Request: ${JSON.stringify(endpoint.request_schema)}
+Response: ${JSON.stringify(endpoint.response_schema)}
+    `;
+
+    return this.auditEndpointSecurity(apiContext);
+  }
+
 }
