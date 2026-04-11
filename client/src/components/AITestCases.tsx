@@ -98,7 +98,7 @@ const AITestCases = ({ endpointId }: AITestCasesProps) => {
                           ) : (
                             <XCircle className="h-5 w-5 text-rose-500" />
                           )}
-                          <h4 className="font-bold text-slate-900">{test.name || \`Test Case #\${idx + 1}\`}</h4>
+                          <h4 className="font-bold text-slate-900">{test.name || `Test Case #${idx + 1}`}</h4>
                         </div>
                       </div>
                       
