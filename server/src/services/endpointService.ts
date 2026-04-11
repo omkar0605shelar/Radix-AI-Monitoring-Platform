@@ -24,7 +24,8 @@ export class EndpointService {
           return JSON.parse(cached);
         }
       } catch (err) {
-        console.warn('⚠️  Redis cache read failed (falling back to DB):', (err as any).message);
+        // Silent fallback: Upstash/Serverless Redis often closes idle sockets.
+        // The DB fallback below ensures the request still succeeds.
       }
     }
 
@@ -36,7 +37,7 @@ export class EndpointService {
       try {
         await redisClient.setEx(cacheKey, 3600, JSON.stringify(endpoints));
       } catch (err) {
-        console.warn('⚠️  Redis cache write failed:', (err as any).message);
+        // Silent handling of cache write failures.
       }
     }
 

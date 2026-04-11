@@ -96,7 +96,7 @@ export const processScanJob = async (projectId: string, repositoryUrl: string) =
       try {
         await redisClient.del(`endpoints:${projectId}`);
       } catch (err) {
-        console.warn('⚠️  Failed to clear Redis cache after scan:', (err as any).message);
+        // Silent cleanup: intermittent Redis errors shouldn't crash or worry the user after a successful scan.
       }
     }
     
