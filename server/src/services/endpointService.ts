@@ -18,9 +18,13 @@ export class EndpointService {
     // 2. Check Redis Cache
     const cacheKey = `endpoints:${projectId}`;
     if (redisClient.isOpen) {
-      const cached = await redisClient.get(cacheKey);
-      if (cached) {
-        return JSON.parse(cached);
+      try {
+        const cached = await redisClient.get(cacheKey);
+        if (cached) {
+          return JSON.parse(cached);
+        }
+      } catch (err) {
+        console.warn('⚠️  Redis cache read failed (falling back to DB):', (err as any).message);
       }
     }
 
@@ -29,7 +33,11 @@ export class EndpointService {
 
     // 4. Save to Cache ONLY if project is completed (expire in 1 hour)
     if (redisClient.isOpen && project.status === 'completed') {
-      await redisClient.setEx(cacheKey, 3600, JSON.stringify(endpoints));
+      try {
+        await redisClient.setEx(cacheKey, 3600, JSON.stringify(endpoints));
+      } catch (err) {
+        console.warn('⚠️  Redis cache write failed:', (err as any).message);
+      }
     }
 
     return endpoints;
