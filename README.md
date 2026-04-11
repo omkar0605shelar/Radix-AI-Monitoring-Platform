@@ -1,6 +1,6 @@
-# API Insight
+# RADIX
 
-**API Insight** is a comprehensive full-stack application for testing, analyzing, and monitoring APIs. It provides real-time analytics, API testing consoles, background job processing, and AI-driven insights to help developers manage and understand their API endpoints efficiently.
+**RADIX** is a comprehensive full-stack application for testing, analyzing, and monitoring APIs. It provides real-time analytics, API testing consoles, background job processing, and AI-driven insights to help developers manage and understand their API endpoints efficiently.
 
 ### 🌐 Live Links
 - **Frontend App**: [https://api-insight-app.onrender.com/](https://api-insight-app.onrender.com/)
@@ -44,7 +44,7 @@
 
 ## 🏃‍♂️ How to Start the Project Locally
 
-To run API Insight on your local machine, follow these steps:
+To run RADIX on your local machine, follow these steps:
 
 ### 1. Prerequisites
 Make sure you have the following installed on your system:
@@ -56,7 +56,7 @@ Make sure you have the following installed on your system:
 ### 2. Clone the Repository
 ```bash
 git clone <your-repository-url>
-cd "API Insight"
+cd "RADIX"
 ```
 
 ### 3. Backend Setup

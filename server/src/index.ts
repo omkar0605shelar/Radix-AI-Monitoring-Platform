@@ -55,7 +55,7 @@ app.use('/api/github', githubRoutes);
 
 // Basic health check route
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'API Insight Server running' });
+  res.status(200).json({ status: 'ok', message: 'RADIX Server running' });
 });
 
 // Global Error Handler

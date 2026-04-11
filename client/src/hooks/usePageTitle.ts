@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 const usePageTitle = (title: string) => {
   useEffect(() => {
-    const defaultTitle = 'API Insight';
-    document.title = title ? `${title} | ${defaultTitle}` : defaultTitle;
+    const defaultTitle = 'RADIX';
+    document.title = title ? `${title} | ${defaultTitle}` : `${defaultTitle} | AI-Powered API Monitoring`;
   }, [title]);
 };
 

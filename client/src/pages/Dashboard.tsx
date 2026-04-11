@@ -106,7 +106,7 @@ const Dashboard = () => {
               <div className="py-20 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-white/50 backdrop-blur-sm">
                 <FolderGit2 className="h-16 w-16 text-slate-300 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-slate-800">No project intelligence yet</h3>
-                <p className="text-slate-500 max-w-sm mx-auto mt-2">Connect your first GitHub repository to start receiving AI-powered API insights.</p>
+                <p className="text-slate-500 max-w-sm mx-auto mt-2">Connect your first GitHub repository to start receiving AI-powered RADIX insights.</p>
               </div>
             ) : (
               <div className="grid gap-4">

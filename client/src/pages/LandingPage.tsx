@@ -35,10 +35,7 @@ const LandingPage = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="space-y-10"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
-              <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">The Intelligence-First API Platform</span>
-            </div>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">The Intelligence-First RADIX Platform</span>
 
             <h1 className="text-6xl md:text-8xl font-black tracking-tight text-slate-900 leading-[0.95] max-w-5xl mx-auto italic uppercase">
               Reverse Engineer <br />
@@ -100,10 +97,8 @@ const LandingPage = () => {
       {/* Features Grid */}
       <section className="py-32 bg-white px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center space-y-4 mb-24">
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 italic uppercase">Autonomous Analysis</h2>
-            <p className="text-slate-500 text-lg font-medium max-w-xl mx-auto">Skip the manual onboarding. API Insight connects directly to your source.</p>
-          </div>
+            <p className="text-slate-500 text-lg font-medium max-w-xl mx-auto">Skip the manual onboarding. RADIX connects directly to your source.</p>
 
           <motion.div
             variants={container}
@@ -171,7 +166,7 @@ const LandingPage = () => {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-20 space-y-4">
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900 uppercase italic">Better by Design</h2>
-            <p className="text-slate-500 text-lg font-medium">Why developers are switching to the intelligence platform.</p>
+            <p className="text-slate-500 text-lg font-medium">Why developers are switching to the RADIX intelligence platform.</p>
           </div>
 
           <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 shadow-premium">
@@ -180,7 +175,7 @@ const LandingPage = () => {
                 <tr className="bg-slate-50 border-b border-slate-100">
                   <th className="p-8 font-black text-slate-400 uppercase tracking-widest text-[10px]">Ecosystem Feature</th>
                   <th className="p-8 font-black text-slate-900 uppercase italic text-sm">Legacy Tools</th>
-                  <th className="p-8 font-black text-primary uppercase italic text-sm bg-primary/5">Platform Insight</th>
+                  <th className="p-8 font-black text-primary uppercase italic text-sm bg-primary/5">RADIX Intelligence</th>
                 </tr>
               </thead>
               <tbody className="text-sm font-bold">
@@ -231,7 +226,7 @@ const LandingPage = () => {
             <div className="p-2 bg-slate-900 rounded-lg">
               <Zap className="h-4 w-4 text-white" />
             </div>
-            <span className="font-black italic text-slate-900 tracking-tighter uppercase">API Insight Platform</span>
+            <span className="font-black italic text-slate-900 tracking-tighter uppercase">RADIX Platform</span>
           </div>
           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
             &copy; 2026 THE INTELLIGENCE GROUP. ALL RIGHTS RESERVED.

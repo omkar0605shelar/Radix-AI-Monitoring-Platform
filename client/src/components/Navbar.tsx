@@ -19,7 +19,7 @@ const Navbar = () => {
           <div className="h-9 w-9 bg-slate-900 rounded-xl flex items-center justify-center group-hover:bg-primary transition-all shadow-lg shadow-slate-200">
             <Zap className="h-5 w-5 text-white" />
           </div>
-          <span className="text-xl font-black font-sans tracking-tight text-slate-900">API<span className="text-primary">Insight</span></span>
+          <span className="text-xl font-black font-sans tracking-tight text-slate-900 italic uppercase">RA<span className="text-primary not-italic">DIX</span></span>
         </Link>
         
         <div className="hidden md:flex items-center space-x-8">

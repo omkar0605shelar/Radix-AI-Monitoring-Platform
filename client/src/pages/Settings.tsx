@@ -122,7 +122,7 @@ const Settings = () => {
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
                        <div>
                           <h3 className="text-xl font-black text-slate-900">Secret API Keys</h3>
-                          <p className="text-slate-500 text-sm font-medium">Use these keys to authenticate your requests to the API Insight platform.</p>
+                          <p className="text-slate-500 text-sm font-medium">Use these keys to authenticate your requests to the RADIX platform.</p>
                        </div>
                        <form onSubmit={handleCreateKey} className="flex gap-2 w-full sm:w-auto">
                           <input 

@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "radix-server",
   "version": "1.0.0",
   "description": "API Insight Server",
   "main": "dist/index.js",
