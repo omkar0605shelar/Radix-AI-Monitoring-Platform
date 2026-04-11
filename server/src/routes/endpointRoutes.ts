@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getProjectEndpoints } from '../controllers/endpointController.js';
-import { explainEndpoint, auditEndpoint, refactorEndpoint } from '../controllers/aiController.js';
+import { explainEndpoint, auditEndpoint, refactorEndpoint, generateTestCases } from '../controllers/aiController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = Router();
@@ -11,5 +11,6 @@ router.get('/project/:projectId', getProjectEndpoints as any);
 router.get('/:endpointId/explain', explainEndpoint as any);
 router.get('/:endpointId/audit', auditEndpoint as any);
 router.get('/:endpointId/refactor', refactorEndpoint as any);
+router.get('/:endpointId/test-cases', generateTestCases as any);
 
 export default router;

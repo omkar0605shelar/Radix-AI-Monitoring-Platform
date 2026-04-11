@@ -51,3 +51,19 @@ export const refactorEndpoint = async (req: AuthRequest, res: Response, next: Ne
     next(error);
   }
 };
+
+export const generateTestCases = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+  const { endpointId } = req.params;
+  
+  if (!req.user) {
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
+  try {
+    const testCasesResult = await aiService.generateTestCasesEndpoint(endpointId);
+    res.json(testCasesResult);
+  } catch (error) {
+    next(error);
+  }
+};

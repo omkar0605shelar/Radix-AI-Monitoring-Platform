@@ -14,3 +14,8 @@ export const refactorEndpoint = async (endpointId: string) => {
   const response = await api.get(`/endpoints/${endpointId}/refactor`);
   return response.data;
 };
+
+export const generateTestCases = async (endpointId: string) => {
+  const response = await api.get(`/endpoints/${endpointId}/test-cases`);
+  return response.data;
+};

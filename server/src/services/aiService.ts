@@ -383,4 +383,23 @@ Response: ${JSON.stringify(endpoint.response_schema)}
     return this.suggestRefactoring(apiContext);
   }
 
+  // 🛡️ Wrapper for Frontend Compatibility: Generate Test Cases Endpoint
+  async generateTestCasesEndpoint(endpointId: string) {
+    const endpoint = await prisma.endpoint.findUnique({
+       where: { id: endpointId },
+       include: { project: true }
+    });
+
+    if (!endpoint) throw new Error('Endpoint not found');
+
+    const apiContext = `
+Method: ${endpoint.method}
+Path: ${endpoint.path}
+Request: ${JSON.stringify(endpoint.request_schema)}
+Response: ${JSON.stringify(endpoint.response_schema)}
+    `;
+
+    return this.generateTestCases(apiContext);
+  }
+
 }
