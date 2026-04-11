@@ -8,7 +8,7 @@ const nvidia = new OpenAI({
 });
 
 // Standard technical model for analysis
-const MODEL = "meta/llama-3.1-70b-instruct";
+const MODEL = "meta/llama-3.3-70b-instruct";
 
 export class AIService {
   /**
