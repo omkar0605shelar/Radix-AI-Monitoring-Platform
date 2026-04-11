@@ -335,12 +335,12 @@ ${JSON.stringify(endpointList)}
     if (!endpoint) throw new Error('Endpoint not found');
 
     // Treat the structured endpoint data as the "code" for the documentation generator
-    const apiContext = \`
-Method: \${endpoint.method}
-Path: \${endpoint.path}
-Request: \${JSON.stringify(endpoint.request_schema)}
-Response: \${JSON.stringify(endpoint.response_schema)}
-    \`;
+    const apiContext = `
+Method: ${endpoint.method}
+Path: ${endpoint.path}
+Request: ${JSON.stringify(endpoint.request_schema)}
+Response: ${JSON.stringify(endpoint.response_schema)}
+    `;
 
     return this.generateSmartDocumentation(apiContext);
   }
