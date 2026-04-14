@@ -9,7 +9,7 @@ COPY prisma ./prisma/
 RUN npm install
 COPY . .
 
-RUN npx prisma generate && ./node_modules/.bin/tsc
+RUN npx prisma generate && node node_modules/typescript/bin/tsc
 
 # Production stage
 FROM node:20-alpine
